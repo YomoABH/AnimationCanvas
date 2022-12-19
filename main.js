@@ -13,9 +13,10 @@ const animate = () => {
 		bgColor: "rgb(17, 2, 2)",
 		dotsColor: "rgba(255, 40, 40, 1)",
 		dotsRadius: 2,
-		dotsCount: 60,
+		dotsCount: 40,
 		dotsMaxSpeed: 0.6,
-		lineLength: 156,
+		lineLength: 190,
+		liveTime: 2
 	}
 
 	document.querySelector('body').appendChild(canvas)
@@ -31,7 +32,9 @@ const animate = () => {
 			this.y = Math.random() * h
 			this.speedX = Math.random() * (params.dotsMaxSpeed * 2) - params.dotsMaxSpeed
 			this.speedY = Math.random() * (params.dotsMaxSpeed * 2) - params.dotsMaxSpeed
+			this.live = Math.random() * params.liveTime * 60
 		}
+
 		position() {
 			this.x + this.speedX > w && this.x > 0 || this.x + this.speedX < 0 && this.x < 0 ? this.speedX *= -1 : this.speedX
 			this.y + this.speedY > w && this.y > 0 || this.y + this.speedY < 0 && this.y < 0 ? this.speedY *= -1 : this.speedY
@@ -45,6 +48,18 @@ const animate = () => {
 			ctx.fillStyle = params.dotsColor
 			ctx.fill()
 		}
+
+		relive() {
+			if (this.live < 1) {
+				this.x = Math.random() * w
+				this.y = Math.random() * h
+				this.speedX = Math.random() * (params.dotsMaxSpeed * 2) - params.dotsMaxSpeed
+				this.speedY = Math.random() * (params.dotsMaxSpeed * 2) - params.dotsMaxSpeed
+				this.live = Math.random() * params.liveTime * 60
+			}
+			this.live--
+		}
+
 	}
 
 
@@ -56,6 +71,7 @@ const animate = () => {
 	const reDrawDots = () => {
 		for (let i in dots) {
 			dots[i].reDraw()
+			dots[i].relive()
 			dots[i].position()
 		}
 	}
@@ -72,8 +88,9 @@ const animate = () => {
 
 				length = Math.sqrt((Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))
 				if (length < params.lineLength) {
+					opasity = 1 - length / params.lineLength
 					ctx.lineWidth = '0.4'
-					ctx.strokeStyle = 'rgba(255, 40, 40, 1)'
+					ctx.strokeStyle = `rgba(255, 40, 40, ${opasity})`
 					ctx.beginPath()
 					ctx.moveTo(x1, y1)
 					ctx.lineTo(x2, y2)
